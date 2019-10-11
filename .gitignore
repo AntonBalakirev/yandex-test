@@ -4,3 +4,5 @@
 /out/
 /target/
 /.allure/
+/allure-results/
+/doc/

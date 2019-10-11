@@ -33,7 +33,7 @@ public class NotebooksPageSteps extends BaseSteps {
     }
 
     @Step("Пользователь выбирает товар из списка под номером - \"{0}\"")
-    public NotebooksPageSteps selectProductByOrder(int orderNumber) {
+    public NotebooksPageSteps selectProductByOrder(int orderNumber) throws InterruptedException {
         new NotebooksPage().selectProductByOrder(orderNumber);
         return this;
     }

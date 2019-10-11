@@ -2,11 +2,13 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import steps.XMLSteps;
 import utils.SortingOrder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class NotebooksPage extends BasePage {
 
@@ -16,7 +18,6 @@ public class NotebooksPage extends BasePage {
     @FindBy(xpath = "//input[@name='Цена до']")
     WebElement maxPriceInput;
 
-//    String brand = "//input[contains(@name, '%s')]";
     String brand = "//span[text()='%s']";
 
     @FindBy(xpath = "//button[contains(@class, 'button_arrow_down button_size_s')]")
@@ -32,7 +33,6 @@ public class NotebooksPage extends BasePage {
     public void selectManufacturer(String brand) {
         waitForLoad(By.xpath(String.format(this.brand, brand)));
         scrollToElement(driver.findElement(By.xpath(String.format(this.brand, brand))));
-//        waitToBeClickable(driver.findElement(By.xpath(String.format(this.brand, brand))), 20);
         driver.findElement(By.xpath(String.format(this.brand, brand))).click();
     }
 
@@ -58,17 +58,23 @@ public class NotebooksPage extends BasePage {
 
     public void sortItemsByPrice(SortingOrder order){
         scrollToElement(priceSortingButton);
+        Actions actions = new Actions(driver);
         do {
-            priceSortingButton.click();
+            actions.moveToElement(priceSortingButton).click().build().perform();
         } while(priceSortingButton.getAttribute("class").contains(order.order));
     }
 
-    public void selectProductByOrder(int orderNumber) {
+    public void selectProductByOrder(int orderNumber) throws InterruptedException {
         List<WebElement> productsList = driver.findElements(By.xpath(itemsList));
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         waitForLoad(By.xpath(itemsList));
-        waitForVisibility(productsList.get(orderNumber - 1));
-        scrollToElement(productsList.get(orderNumber - 1));
-        waitToBeClickable(productsList.get(orderNumber - 1));
-        driver.findElements(By.xpath(itemsList)).get(orderNumber - 1).click();
+//        waitToBeClickable(productsList.get(orderNumber - 1));
+//        waitForVisibility(productsList.get(orderNumber - 1));
+        waitForElementEnabled(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
+        Thread.sleep(2000);
+        scrollToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
+        Thread.sleep(2000);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1)).click().build().perform();
     }
 }

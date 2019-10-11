@@ -6,7 +6,11 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import utils.Stash;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -48,5 +52,25 @@ public class BaseSteps {
     @Step("Пользователь делает скриншот")
     public void performScreenShot() {
         Attach.makeScreenshot();
+    }
+
+    @Step("Производится расчет результата")
+    public void attachResult() throws IOException {
+        Map.Entry<String, HashMap<String, Object>> maxEntry = null;
+        for (Map.Entry<String, HashMap<String, Object>> mapEntry : Stash.getStash().entrySet()) {
+            double diagonalValue = Double.parseDouble((String) mapEntry.getValue().get("Диагональ"));
+            if(maxEntry == null ||
+                    diagonalValue > Double.parseDouble((String) maxEntry.getValue().get("Диагональ"))){
+                maxEntry = mapEntry;
+            } else if (diagonalValue == Double.parseDouble((String) maxEntry.getValue().get("Диагональ"))) {
+                if (mapEntry.getValue().get("Вес") != null &&
+                        Double.parseDouble((String) mapEntry.getValue().get("Вес")) > Double.parseDouble((String) maxEntry.getValue().get("Вес"))) {
+                    maxEntry = mapEntry;
+                }
+            }
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter("result_output.txt"));
+        writer.write(maxEntry.toString());
+        writer.close();
     }
 }
