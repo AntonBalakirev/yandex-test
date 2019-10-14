@@ -4,10 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import pojo.manufacturers.Manufacturer;
 import steps.*;
-import utils.SortingOrder;
+import enums.SortingOrder;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+
+import static steps.XMLSteps.parameters;
 
 public class YandexTest {
 
@@ -17,6 +19,7 @@ public class YandexTest {
     private ComputersPageSteps computersPageSteps = new ComputersPageSteps();
     private NotebooksPageSteps notebooksPageSteps = new NotebooksPageSteps();
     private ProductPageSteps productPageSteps = new ProductPageSteps();
+    private TechnicalSteps techSteps = new TechnicalSteps();
 
     @Before
     public void setUp() {
@@ -26,46 +29,31 @@ public class YandexTest {
     @Test
     @DisplayName("Yandex Market тест")
     public void yandexTest() throws JAXBException, InterruptedException, IOException {
-        //1.1
         xmlSteps.initializeParametersfromXMLwithRate("notebooks.xml", 10);
-        //1.2
-        baseSteps.openSite("https://market.yandex.ru");
-        //1.3
-        mainPageSteps.selectNewRegionByFirstLetters("Сан", "Санкт-Петербург");
-        //1.4
-        mainPageSteps.selectGoodsCategory("Компьютерная техника");
-        //1.5
+        techSteps.openSite("https://market.yandex.ru");
+        mainPageSteps.selectNewRegionByFirstLetters("Сан", "Санкт-Петербург")
+                .selectGoodsCategory("Компьютерная техника");
         computersPageSteps.selectGoodsCategory("Ноутбуки");
-        for (Manufacturer manufacturer : XMLSteps.parameters.getManufacturers().getManufacturersList()) {
+        for (Manufacturer manufacturer : parameters.getManufacturers().getManufacturersList()) {
             if (manufacturer.getProducts().contains("notebook")) {
-                //1.6
-                notebooksPageSteps.selectManufacturer(manufacturer.getName());
-                //1.7 + 1.8
-                notebooksPageSteps.inputMinAndMaxPrice(
-                        manufacturer.getPriceLimit().getMin(),
-                        manufacturer.getPriceLimit().getMax());
-                //1.9
-                notebooksPageSteps.selectItemsAmount(12);
-                //1.10
-
-                //1.11
-                notebooksPageSteps.sortItemsByPrice(SortingOrder.DESC);
-                //1.12
-                notebooksPageSteps.selectProductByOrder(3);
-                //1.13
-                productPageSteps.checkManufacturer(manufacturer.getName());
-                //1.14
-                productPageSteps.selectProductTab("Характеристики");
-                //1.15
-                baseSteps.performScreenShot();
-                //1.16
-                productPageSteps.saveParameter(manufacturer.getName(), "Вес");
-                productPageSteps.saveParameter(manufacturer.getName(), "Диагональ");
-
-                productPageSteps.returnByBreadCrumbsOnStepAmount(1);
+                notebooksPageSteps.selectManufacturer(manufacturer.getName())
+                        .inputMinAndMaxPrice(
+                                manufacturer.getPriceLimit().getMin(),
+                                manufacturer.getPriceLimit().getMax())
+                        .selectItemsAmount(12)
+                        .setShopsRatingFrom(parameters.getGlobal().getExcludedVendors().getRating())
+//                        .markAllShopsExcept(parameters.getGlobal().getExcludedVendors().getVendors())
+                        .sortItemsByPrice(SortingOrder.DESC)
+                        .selectProductByOrder(3);
+                productPageSteps.checkManufacturer(manufacturer.getName())
+                        .selectProductTab("Характеристики");
+                techSteps.performScreenShot();
+                productPageSteps.saveParameter(manufacturer.getName(), "Вес")
+                        .saveParameter(manufacturer.getName(), "Диагональ")
+                        .returnByBreadCrumbsOnStepAmount(1);
             }
         }
-        baseSteps.attachResult();
+        techSteps.summarizeResult();
     }
 
     @After

@@ -14,6 +14,10 @@ public class Stash {
     public static void putStash(String manufacturerName, String key, Object value) {
         HashMap<String, Object> map = new HashMap<>();
         map.put(key, value);
-        stash.put(manufacturerName, map);
+        if (!stash.containsKey(manufacturerName)) {
+            stash.put(manufacturerName, map);
+        } else {
+            stash.get(manufacturerName).put(key, value);
+        }
     }
 }

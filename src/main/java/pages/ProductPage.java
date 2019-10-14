@@ -5,17 +5,20 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import utils.Attach;
 import utils.Stash;
 
 import java.util.List;
 
 public class ProductPage extends BasePage {
 
-    String manufacturerBreadCrumb = "//ul[@id='n-breadcrumbs']//a[@title='%s']";
+    @FindBy(xpath = "//h1[contains(@class, 'title')]")
+    private WebElement productTitle;
 
     String productTab = "//a[contains(text(), '%s')]/parent::li";
 
-    String parameterValue = "//span[contains(text(), 'Вес')]/parent::dt/following-sibling::dd/span";
+    String parameterValue = "//span[contains(text(), '%s')]/parent::dt/following-sibling::dd/span";
 
     String breadCrumbs = "//li[contains(@class, 'n-breadcrumbs')]/a";
 
@@ -24,11 +27,12 @@ public class ProductPage extends BasePage {
     }
 
     public void checkManufacturer(String manufacturerName) {
-        waitForLoad(By.xpath(String.format(manufacturerBreadCrumb, manufacturerName)));
-        boolean manufacturerIsRight = driver.findElements(By.xpath(String.format(manufacturerBreadCrumb, manufacturerName))).size() > 0;
+        waitForVisibility(productTitle);
         Assert.assertTrue(
-                "Производитель отображается неверно",
-                manufacturerIsRight
+                "Производитель отображается неверно" +
+                "\nactual: " + productTitle.getText() +
+                "\nshould contain: " + manufacturerName,
+                productTitle.getText().contains(manufacturerName)
         );
     }
 
@@ -45,6 +49,7 @@ public class ProductPage extends BasePage {
                 softly.assertThat(
                         driver.findElements(By.xpath(String.format(parameterValue, parameter))).size() > 0
                 ).isTrue();
+                Attach.makeScreenshot();
             }
         } else {
             saveParamToStash(manufacturerName, parameter);
@@ -52,9 +57,10 @@ public class ProductPage extends BasePage {
     }
 
     private void saveParamToStash(String manufacturerName, String parameter) {
-        waitForElementEnabled(driver.findElement(By.xpath(String.format(parameterValue, parameter))));
-        scrollToElement(driver.findElement(By.xpath(String.format(parameterValue, parameter))));
-        String stringParam = driver.findElement(By.xpath(String.format(parameterValue, parameter))).getText().trim();
+        WebElement parameterValueElement = driver.findElement(By.xpath(String.format(parameterValue, parameter)));
+        waitForElementEnabled(parameterValueElement);
+        scrollToElement(parameterValueElement);
+        String stringParam = parameterValueElement.getText().trim();
         Stash.putStash(manufacturerName, parameter, stringParam.substring(0, stringParam.indexOf(" ")));
     }
 

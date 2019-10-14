@@ -2,7 +2,9 @@ package steps;
 
 import io.qameta.allure.Step;
 import pages.NotebooksPage;
-import utils.SortingOrder;
+import enums.SortingOrder;
+
+import java.util.List;
 
 public class NotebooksPageSteps extends BaseSteps {
 
@@ -35,6 +37,18 @@ public class NotebooksPageSteps extends BaseSteps {
     @Step("Пользователь выбирает товар из списка под номером - \"{0}\"")
     public NotebooksPageSteps selectProductByOrder(int orderNumber) throws InterruptedException {
         new NotebooksPage().selectProductByOrder(orderNumber);
+        return this;
+    }
+
+    @Step("Пользователь устанавливает рейтинг магазина от - \"{0}\"")
+    public NotebooksPageSteps setShopsRatingFrom(String rating) {
+        new NotebooksPage().setShopsRatingFrom(rating);
+        return this;
+    }
+
+    @Step("Пользователь отмечает все магазины кроме указанных- \"{0}\"")
+    public NotebooksPageSteps markAllShopsExcept(List<String> vendors) {
+        new NotebooksPage().markAllShopsExcept(vendors);
         return this;
     }
 }

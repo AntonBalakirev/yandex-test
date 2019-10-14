@@ -50,7 +50,7 @@ abstract class BasePage {
      * Клик по элементу
      * @param element элемент
      */
-    public void click(WebElement element) {
+    void click(WebElement element) {
         element.click();
     }
 
@@ -82,7 +82,7 @@ abstract class BasePage {
                 .until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
-    public void waitForElementEnabled(WebElement element) {
+    void waitForElementEnabled(WebElement element) {
         try {
             WebDriverWait wait = new WebDriverWait(driver, 20);
             wait.pollingEvery(Duration.ofMillis(300))

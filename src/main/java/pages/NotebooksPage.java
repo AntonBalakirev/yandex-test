@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import steps.XMLSteps;
-import utils.SortingOrder;
+import enums.SortingOrder;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +29,11 @@ public class NotebooksPage extends BasePage {
     WebElement priceSortingButton;
 
     String itemsList = "//div[contains(@class, 'n-snippet-list')]//div[contains(@class, 'title')]/a";
+
+    String ratingShopCheckbox = "//input[@name='Рейтинг магазина' and @id='qrfrom_%s']";
+
+    @FindBy(xpath = "//legend[text()='Магазины']/following::button[text()='Показать всё']")
+    WebElement showAllShopsButton;
 
     public void selectManufacturer(String brand) {
         waitForLoad(By.xpath(String.format(this.brand, brand)));
@@ -68,13 +73,24 @@ public class NotebooksPage extends BasePage {
         List<WebElement> productsList = driver.findElements(By.xpath(itemsList));
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         waitForLoad(By.xpath(itemsList));
-//        waitToBeClickable(productsList.get(orderNumber - 1));
-//        waitForVisibility(productsList.get(orderNumber - 1));
         waitForElementEnabled(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
         Thread.sleep(2000);
         scrollToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
         Thread.sleep(2000);
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1)).click().build().perform();
+    }
+
+    public void setShopsRatingFrom(String rating) {
+        WebElement ratingShopCheckboxElement = driver.findElement(By.xpath(String.format(ratingShopCheckbox, rating)));
+        scrollToElement(ratingShopCheckboxElement);
+        click(ratingShopCheckboxElement);
+    }
+
+    public void markAllShopsExcept(List<String> vendors) {
+        scrollToElement(showAllShopsButton);
+        waitForVisibility(showAllShopsButton);
+        click(showAllShopsButton);
+        //mark all shops except excluded vendors
     }
 }
