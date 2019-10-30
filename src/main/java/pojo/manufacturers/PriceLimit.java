@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Pricelimit")
+@XmlRootElement(name = "PriceLimit")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PriceLimit {
     @XmlElement(name = "Min")

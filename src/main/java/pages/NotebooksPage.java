@@ -1,13 +1,15 @@
 package pages;
 
+import enums.SortingOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import steps.XMLSteps;
-import enums.SortingOrder;
+import utils.Stash;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class NotebooksPage extends BasePage {
@@ -28,14 +30,23 @@ public class NotebooksPage extends BasePage {
     @FindBy(xpath = "//a[contains(text(), 'по цене')]/parent::div")
     WebElement priceSortingButton;
 
+    //    String itemsList = "//div[@class='n-snippet-card2__title']/a";
     String itemsList = "//div[contains(@class, 'n-snippet-list')]//div[contains(@class, 'title')]/a";
 
-    String ratingShopCheckbox = "//input[@name='Рейтинг магазина' and @id='qrfrom_%s']";
+    String ratingShopCheckbox = "//label[@for='qrfrom_%s']";
 
     @FindBy(xpath = "//legend[text()='Магазины']/following::button[text()='Показать всё']")
     WebElement showAllShopsButton;
 
     public void selectManufacturer(String brand) {
+        if (!Stash.getManufacturer().isEmpty()) {
+            clickManyfacturerCheckBox(Stash.getManufacturer());
+        }
+        clickManyfacturerCheckBox(brand);
+        Stash.setManufacturer(brand);
+    }
+
+    private void clickManyfacturerCheckBox(String brand) {
         waitForLoad(By.xpath(String.format(this.brand, brand)));
         scrollToElement(driver.findElement(By.xpath(String.format(this.brand, brand))));
         driver.findElement(By.xpath(String.format(this.brand, brand))).click();
@@ -55,35 +66,46 @@ public class NotebooksPage extends BasePage {
         return this;
     }
 
-    public void selectItemsAmount(Integer amount){
+    public void selectItemsAmount(Integer amount) {
         scrollToElement(amountButton);
         amountButton.click();
         driver.findElement(By.xpath(String.format(amountList, amount))).click();
     }
 
-    public void sortItemsByPrice(SortingOrder order){
+    public void sortItemsByPrice(SortingOrder order) {
         scrollToElement(priceSortingButton);
         Actions actions = new Actions(driver);
         do {
             actions.moveToElement(priceSortingButton).click().build().perform();
-        } while(priceSortingButton.getAttribute("class").contains(order.order));
+        } while (priceSortingButton.getAttribute("class").contains(order.order));
     }
 
     public void selectProductByOrder(int orderNumber) throws InterruptedException {
-        List<WebElement> productsList = driver.findElements(By.xpath(itemsList));
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        mainHandle = driver.getWindowHandle();
         waitForLoad(By.xpath(itemsList));
         waitForElementEnabled(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         scrollToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1)).click().build().perform();
+        Set<String> winHandles = driver.getWindowHandles();
+        Thread.sleep(5000);
+        if (winHandles.size() > 1) {
+            for (String winHandle : winHandles) {
+                if (!winHandle.equals(mainHandle)) {
+                    driver.switchTo().window(winHandle);
+                }
+            }
+        }
     }
 
-    public void setShopsRatingFrom(String rating) {
+    public void setShopsRatingFrom(String rating) throws InterruptedException {
         WebElement ratingShopCheckboxElement = driver.findElement(By.xpath(String.format(ratingShopCheckbox, rating)));
+        Thread.sleep(2000);
         scrollToElement(ratingShopCheckboxElement);
+        Thread.sleep(2000);
         click(ratingShopCheckboxElement);
     }
 
@@ -92,5 +114,48 @@ public class NotebooksPage extends BasePage {
         waitForVisibility(showAllShopsButton);
         click(showAllShopsButton);
         //mark all shops except excluded vendors
+//        HashMap<String, Boolean> clicked = new HashMap<>();
+//        while (true) {
+//            AtomicBoolean finished = new AtomicBoolean(true);
+//            List<WebElement> elements = driver.findElements(By.cssSelector("[data-zone-name=\"search-filter\"] [data-autotest-id=\"fesh\"] label"));
+//            try {
+//                elements.forEach(el -> {
+//                    try {
+//                        WebElement input = null;
+//                        String labelFor = el.getAttribute("for");
+//                        if (labelFor.equals("fesh-suggester")) {
+//                            return;
+//                        }
+//                        try {
+//                            input = el.findElement(By.cssSelector("input[type=checkbox]"));
+//                        } catch (Exception e) {
+//                            return;
+//                        }
+//                        if (input == null) {
+//                            return;
+//                        }
+//                        String name = input.getAttribute("name");
+//                        if (clicked.containsKey(name)) {
+//                            return;
+//                        }
+//                        clicked.put(name, true);
+//                        for (String shop : except) {
+//                            if (name.toLowerCase().contains(shop.toLowerCase())) {
+//                                return;
+//                            }
+//                        }
+//                        finished.set(false);
+//                        el.findElement(By.cssSelector("div")).click();
+//                        ((JavascriptExecutor) driver).executeScript("document.querySelector('[for=" + labelFor + "]').scrollIntoView({block: 'center'})");
+//                    } catch (Exception ignored) {
+//                    }
+//                });
+//            } catch (Exception ignored) {
+//
+//            }
+//            if (finished.get()) {
+//                break;
+//            }
+//        }
     }
 }

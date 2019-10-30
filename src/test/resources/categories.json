@@ -1,6 +1,6 @@
 [
   {
-    "name": "Skipped asserts",
-    "matchedStatuses": ["skipped"]
+    "name": "Broken asserts",
+    "matchedStatuses": ["broken"]
   }
 ]

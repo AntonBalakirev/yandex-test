@@ -41,7 +41,7 @@ public class NotebooksPageSteps extends BaseSteps {
     }
 
     @Step("Пользователь устанавливает рейтинг магазина от - \"{0}\"")
-    public NotebooksPageSteps setShopsRatingFrom(String rating) {
+    public NotebooksPageSteps setShopsRatingFrom(String rating) throws InterruptedException {
         new NotebooksPage().setShopsRatingFrom(rating);
         return this;
     }

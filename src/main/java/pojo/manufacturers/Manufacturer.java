@@ -9,7 +9,7 @@ public class Manufacturer {
     private String products;
     @XmlElement(name = "Name")
     private String name;
-    @XmlElement(name = "Pricelimit")
+    @XmlElement(name = "PriceLimit")
     private PriceLimit priceLimit;
 
     public Manufacturer() {

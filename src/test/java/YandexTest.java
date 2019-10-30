@@ -1,20 +1,24 @@
+import enums.SortingOrder;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pojo.manufacturers.Manufacturer;
 import steps.*;
-import enums.SortingOrder;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
+import static enums.Characteristics.DIAGONAL;
+import static enums.Characteristics.WEIGHT;
+import static enums.GoodsCategories.COMPUTERS;
+import static enums.GoodsCategories.NOTEBOOKS;
+import static enums.ProductTabs.CHARACHTERISTICS;
 import static steps.XMLSteps.parameters;
 
 public class YandexTest {
 
     private XMLSteps xmlSteps = new XMLSteps();
-    private BaseSteps baseSteps = new BaseSteps();
     private MainPageSteps mainPageSteps = new MainPageSteps();
     private ComputersPageSteps computersPageSteps = new ComputersPageSteps();
     private NotebooksPageSteps notebooksPageSteps = new NotebooksPageSteps();
@@ -28,12 +32,12 @@ public class YandexTest {
 
     @Test
     @DisplayName("Yandex Market тест")
-    public void yandexTest() throws JAXBException, InterruptedException, IOException {
-        xmlSteps.initializeParametersfromXMLwithRate("notebooks.xml", 10);
+    public void yandexTest() throws JAXBException, IOException, InterruptedException {
+        xmlSteps.initializeParametersfromXMLwithRate("parameters_1.xml", 10);
         techSteps.openSite("https://market.yandex.ru");
         mainPageSteps.selectNewRegionByFirstLetters("Сан", "Санкт-Петербург")
-                .selectGoodsCategory("Компьютерная техника");
-        computersPageSteps.selectGoodsCategory("Ноутбуки");
+                .selectGoodsCategory(COMPUTERS);
+        computersPageSteps.selectGoodsCategory(NOTEBOOKS);
         for (Manufacturer manufacturer : parameters.getManufacturers().getManufacturersList()) {
             if (manufacturer.getProducts().contains("notebook")) {
                 notebooksPageSteps.selectManufacturer(manufacturer.getName())
@@ -42,14 +46,14 @@ public class YandexTest {
                                 manufacturer.getPriceLimit().getMax())
                         .selectItemsAmount(12)
                         .setShopsRatingFrom(parameters.getGlobal().getExcludedVendors().getRating())
-//                        .markAllShopsExcept(parameters.getGlobal().getExcludedVendors().getVendors())
+                        .markAllShopsExcept(parameters.getGlobal().getExcludedVendors().getVendors())
                         .sortItemsByPrice(SortingOrder.DESC)
                         .selectProductByOrder(3);
                 productPageSteps.checkManufacturer(manufacturer.getName())
-                        .selectProductTab("Характеристики");
+                        .selectProductTab(CHARACHTERISTICS);
                 techSteps.performScreenShot();
-                productPageSteps.saveParameter(manufacturer.getName(), "Вес")
-                        .saveParameter(manufacturer.getName(), "Диагональ")
+                productPageSteps.saveParameter(manufacturer.getName(), WEIGHT)
+                        .saveParameter(manufacturer.getName(), DIAGONAL)
                         .returnByBreadCrumbsOnStepAmount(1);
             }
         }

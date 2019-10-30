@@ -1,9 +1,13 @@
 package pages;
 
+import enums.Characteristics;
+import enums.ProductTabs;
+import io.qameta.allure.Allure;
+import io.qameta.allure.model.Status;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import utils.Attach;
@@ -17,42 +21,43 @@ public class ProductPage extends BasePage {
     private WebElement productTitle;
 
     String productTab = "//a[contains(text(), '%s')]/parent::li";
+    By allCharacteristicsLocator = By.xpath("//a[contains(text(), 'Характеристики')]/parent::li");
 
     String parameterValue = "//span[contains(text(), '%s')]/parent::dt/following-sibling::dd/span";
 
     String breadCrumbs = "//li[contains(@class, 'n-breadcrumbs')]/a";
 
-    public ProductPage(){
-        waitForLoad(allCategoryButtonLocator);
+    public ProductPage() {
+        waitForLoad(allCharacteristicsLocator);
     }
 
     public void checkManufacturer(String manufacturerName) {
         waitForVisibility(productTitle);
         Assert.assertTrue(
                 "Производитель отображается неверно" +
-                "\nactual: " + productTitle.getText() +
-                "\nshould contain: " + manufacturerName,
+                        "\nactual: " + productTitle.getText() +
+                        "\nshould contain: " + manufacturerName,
                 productTitle.getText().contains(manufacturerName)
         );
     }
 
-    public void selectProductTab(String tab) {
+    public void selectProductTab(ProductTabs tab) {
         driver.findElement(By.xpath(String.format(productTab, tab))).click();
     }
 
-    public void saveParameter(String manufacturerName, String parameter) {
-        if(parameter.equals("Вес")){
-            if(driver.findElements(By.xpath(String.format(parameterValue, parameter))).size() > 0){
-                saveParamToStash(manufacturerName, parameter);
-            } else {
-                JUnitSoftAssertions softly = new JUnitSoftAssertions();
-                softly.assertThat(
-                        driver.findElements(By.xpath(String.format(parameterValue, parameter))).size() > 0
-                ).isTrue();
-                Attach.makeScreenshot();
-            }
+    public void saveParameter(String manufacturerName, Characteristics parameter) throws InterruptedException {
+        if (driver.findElements(By.xpath(String.format(parameterValue, parameter.getTextValue()))).size() > 0) {
+            saveParamToStash(manufacturerName, parameter.getTextValue());
         } else {
-            saveParamToStash(manufacturerName, parameter);
+            JUnitSoftAssertions softly = new JUnitSoftAssertions();
+                Allure.step("Broken asserts", Status.BROKEN);
+            softly.assertThat(
+                    driver.findElements(By.xpath(String.format(parameterValue, parameter.getTextValue()))).size() > 0
+            ).isTrue();
+            JavascriptExecutor jse = (JavascriptExecutor) driver;
+            jse.executeScript("arguments[0].style.border='2px solid red'", driver.findElement(By.xpath(String.format(parameterValue, parameter))));
+            Thread.sleep(2);
+            Attach.makeScreenshot();
         }
     }
 

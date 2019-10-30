@@ -15,8 +15,8 @@ public class XMLTest {
     @Test()
     @DisplayName("Check XML updating")
     public void XMLmethodsCheck() throws JAXBException {
-        Parameters parameters = user.unmarshallParameters("notebooks.xml");
+        Parameters parameters = user.unmarshallParameters("parameters_1.xml");
         user.increaseParamsByRate(parameters, byRate);
-        user.marshallParameters(parameters, "notebooks_updated.xml");
+        user.marshallParameters(parameters, "parameters_updated1.xml");
     }
 }

@@ -7,6 +7,16 @@ public class Stash {
 
     private static Map<String, HashMap<String, Object>> stash = new HashMap();
 
+    private static String manufacturer = "";
+
+    public static String getManufacturer() {
+        return manufacturer;
+    }
+
+    public static void setManufacturer(String manufacturer) {
+        Stash.manufacturer = manufacturer;
+    }
+
     public static Map<String, HashMap<String, Object>> getStash() {
         return stash;
     }

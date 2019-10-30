@@ -10,8 +10,6 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -23,18 +21,21 @@ public class BaseSteps {
         return driver;
     }
 
-    private static void setDriver(WebDriver driver) {
+    private static String headlessProp = "";
+    private static String implicityWait = "";
+    public static String browserProp = "";
+
+    private static void initDriver(WebDriver driver) {
         BaseSteps.driver = driver;
     }
 
     public static void startUp() {
-        String headlessProp = "";
-        String browserProp = "";
         try {
             Properties appProps = new Properties();
             appProps.load(new FileInputStream("src/test/resources/application.properties"));
             headlessProp = appProps.getProperty("headless.run");
             browserProp = appProps.getProperty("browser");
+            implicityWait = appProps.getProperty("implicitly.page.load.wait");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,19 +44,27 @@ public class BaseSteps {
             System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
             ChromeOptions options = new ChromeOptions();
             options.setHeadless(Boolean.parseBoolean(headlessProp));
-            setDriver(new ChromeDriver(options));
+            initDriver(new ChromeDriver(options));
         } else if (Browser.valueOf(browserProp).equals(Browser.IE)){
             System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
             InternetExplorerOptions options = new InternetExplorerOptions();
             options.ignoreZoomSettings();
-            setDriver(new InternetExplorerDriver(options));
+            options.setCapability("requireWindowFocus", false);
+            initDriver(new InternetExplorerDriver(options));
         }
-
         //Установка времени ожидания загрузки страницы
-        getDriver().manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+        getDriver().manage().timeouts().pageLoadTimeout(Integer.parseInt(implicityWait), TimeUnit.SECONDS);
     }
 
     public static void shutDown() {
-        getDriver().quit();
+        if(browserProp.equals("IE")){
+            try {
+                Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe").waitFor();
+            } catch (IOException | InterruptedException e) {
+                throw new Error("There is a problem of killing IE", e);
+            }
+        } else {
+            getDriver().quit();
+        }
     }
 }

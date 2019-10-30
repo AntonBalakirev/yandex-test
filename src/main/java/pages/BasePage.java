@@ -17,6 +17,7 @@ import static steps.BaseSteps.getDriver;
 abstract class BasePage {
 
     WebDriver driver;
+    String mainHandle = "";
 
     BasePage() {
         driver = getDriver();
