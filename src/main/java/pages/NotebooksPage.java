@@ -38,11 +38,20 @@ public class NotebooksPage extends BasePage {
     @FindBy(xpath = "//legend[text()='Магазины']/following::button[text()='Показать всё']")
     WebElement showAllShopsButton;
 
-    public void selectManufacturer(String brand) {
+    @FindBy(xpath = "//legend[contains(text(), 'Производитель')]/following-sibling::footer/button[contains(text(), 'Показать всё')]")
+    WebElement showAllManufacturersButton;
+
+    public void selectManufacturer(String brand) throws NoSuchFieldException, InterruptedException {
+        click(showAllManufacturersButton);
         if (!Stash.getManufacturer().isEmpty()) {
             clickManyfacturerCheckBox(Stash.getManufacturer());
         }
-        clickManyfacturerCheckBox(brand);
+        Thread.sleep(3000);
+        if(driver.findElements(By.xpath(String.format(this.brand, brand))).size() > 0) {
+            clickManyfacturerCheckBox(brand);
+        } else {
+            throw new NoSuchFieldException("There is no manufacturer");
+        }
         Stash.setManufacturer(brand);
     }
 
@@ -81,7 +90,6 @@ public class NotebooksPage extends BasePage {
     }
 
     public void selectProductByOrder(int orderNumber) throws InterruptedException {
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         mainHandle = driver.getWindowHandle();
         waitForLoad(By.xpath(itemsList));
         waitForElementEnabled(driver.findElements(By.xpath(itemsList)).get(orderNumber - 1));

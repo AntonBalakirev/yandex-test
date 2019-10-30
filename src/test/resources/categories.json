@@ -1,6 +1,6 @@
 [
   {
-    "name": "Broken asserts",
+    "name": "Soft asserts",
     "matchedStatuses": ["broken"]
   }
 ]

@@ -1,5 +1,6 @@
 import enums.SortingOrder;
 import io.qameta.allure.junit4.DisplayName;
+import io.qameta.allure.junit4.Tag;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,15 +41,19 @@ public class YandexTest {
         computersPageSteps.selectGoodsCategory(NOTEBOOKS);
         for (Manufacturer manufacturer : parameters.getManufacturers().getManufacturersList()) {
             if (manufacturer.getProducts().contains("notebook")) {
-                notebooksPageSteps.selectManufacturer(manufacturer.getName())
-                        .inputMinAndMaxPrice(
-                                manufacturer.getPriceLimit().getMin(),
-                                manufacturer.getPriceLimit().getMax())
-                        .selectItemsAmount(12)
-                        .setShopsRatingFrom(parameters.getGlobal().getExcludedVendors().getRating())
-                        .markAllShopsExcept(parameters.getGlobal().getExcludedVendors().getVendors())
-                        .sortItemsByPrice(SortingOrder.DESC)
-                        .selectProductByOrder(3);
+                try {
+                    notebooksPageSteps.selectManufacturer(manufacturer.getName())
+                            .inputMinAndMaxPrice(
+                                    manufacturer.getPriceLimit().getMin(),
+                                    manufacturer.getPriceLimit().getMax())
+                            .selectItemsAmount(12)
+                            .setShopsRatingFrom(parameters.getGlobal().getExcludedVendors().getRating())
+                            .markAllShopsExcept(parameters.getGlobal().getExcludedVendors().getVendors())
+                            .sortItemsByPrice(SortingOrder.DESC)
+                            .selectProductByOrder(3);
+                } catch (NoSuchFieldException e) {
+                    break;
+                }
                 productPageSteps.checkManufacturer(manufacturer.getName())
                         .selectProductTab(CHARACHTERISTICS);
                 techSteps.performScreenShot();

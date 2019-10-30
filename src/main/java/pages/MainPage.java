@@ -5,8 +5,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.Properties;
 import java.util.Set;
 
+import static steps.BaseSteps.baseurl;
 import static steps.BaseSteps.browserProp;
 
 public class MainPage extends BasePage {
@@ -36,11 +38,14 @@ public class MainPage extends BasePage {
         waitToBeClickable(driver.findElement(By.xpath(String.format(regionItem, region))));
         driver.findElement(By.xpath(String.format(regionItem, region))).getSize();
         driver.findElement(By.xpath(String.format(regionItem, region))).click();
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         regionConfirmButton.getSize();
-
         regionConfirmButton.click();
 
+        if(browserProp.equals("IE")){
+            Thread.sleep(5000);
+            driver.get(baseurl);
+        }
     }
 
     public void chooseCategory(GoodsCategories category) throws InterruptedException {

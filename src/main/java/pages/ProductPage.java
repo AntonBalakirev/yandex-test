@@ -42,7 +42,7 @@ public class ProductPage extends BasePage {
     }
 
     public void selectProductTab(ProductTabs tab) {
-        driver.findElement(By.xpath(String.format(productTab, tab))).click();
+        driver.findElement(By.xpath(String.format(productTab, tab.getTextValue()))).click();
     }
 
     public void saveParameter(String manufacturerName, Characteristics parameter) throws InterruptedException {
@@ -50,13 +50,13 @@ public class ProductPage extends BasePage {
             saveParamToStash(manufacturerName, parameter.getTextValue());
         } else {
             JUnitSoftAssertions softly = new JUnitSoftAssertions();
-                Allure.step("Broken asserts", Status.BROKEN);
+                Allure.step("Soft asserts", Status.BROKEN);
             softly.assertThat(
                     driver.findElements(By.xpath(String.format(parameterValue, parameter.getTextValue()))).size() > 0
             ).isTrue();
             JavascriptExecutor jse = (JavascriptExecutor) driver;
-            jse.executeScript("arguments[0].style.border='2px solid red'", driver.findElement(By.xpath(String.format(parameterValue, parameter))));
-            Thread.sleep(2);
+            jse.executeScript("arguments[0].style.border='2px solid red'", driver.findElement(By.xpath(String.format(parameterValue, parameter.getTextValue()))));
+            Thread.sleep(2000);
             Attach.makeScreenshot();
         }
     }

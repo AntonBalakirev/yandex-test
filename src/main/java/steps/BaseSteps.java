@@ -24,6 +24,7 @@ public class BaseSteps {
     private static String headlessProp = "";
     private static String implicityWait = "";
     public static String browserProp = "";
+    public static String baseurl = "";
 
     private static void initDriver(WebDriver driver) {
         BaseSteps.driver = driver;
@@ -36,6 +37,7 @@ public class BaseSteps {
             headlessProp = appProps.getProperty("headless.run");
             browserProp = appProps.getProperty("browser");
             implicityWait = appProps.getProperty("implicitly.page.load.wait");
+            baseurl = appProps.getProperty("main.page.url");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,7 +48,8 @@ public class BaseSteps {
             options.setHeadless(Boolean.parseBoolean(headlessProp));
             initDriver(new ChromeDriver(options));
         } else if (Browser.valueOf(browserProp).equals(Browser.IE)){
-            System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
+//            System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
+            System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer3.6.exe");
             InternetExplorerOptions options = new InternetExplorerOptions();
             options.ignoreZoomSettings();
             options.setCapability("requireWindowFocus", false);

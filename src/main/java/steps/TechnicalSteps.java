@@ -28,11 +28,11 @@ public class TechnicalSteps {
     public void summarizeResult() throws IOException {
         Map.Entry<String, HashMap<String, Object>> maxEntry = null;
         for (Map.Entry<String, HashMap<String, Object>> mapEntry : Stash.getStash().entrySet()) {
-            double diagonalValue = Double.parseDouble((String) mapEntry.getValue().get("Диагональ"));
+            double diagonalValue = Double.parseDouble((String) mapEntry.getValue().get("Экран"));
             if(maxEntry == null ||
-                    diagonalValue > Double.parseDouble((String) maxEntry.getValue().get("Диагональ"))){
+                    diagonalValue > Double.parseDouble((String) maxEntry.getValue().get("Экран"))){
                 maxEntry = mapEntry;
-            } else if (diagonalValue == Double.parseDouble((String) maxEntry.getValue().get("Диагональ"))) {
+            } else if (diagonalValue == Double.parseDouble((String) maxEntry.getValue().get("Экран"))) {
                 if (mapEntry.getValue().get("Вес") != null &&
                         Double.parseDouble((String) mapEntry.getValue().get("Вес")) < Double.parseDouble((String) maxEntry.getValue().get("Вес"))) {
                     maxEntry = mapEntry;

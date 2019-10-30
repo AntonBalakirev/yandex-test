@@ -9,7 +9,7 @@ import java.util.List;
 public class NotebooksPageSteps extends BaseSteps {
 
     @Step("Пользователь выбирает производителя - \"{0}\"")
-    public NotebooksPageSteps selectManufacturer(String manufacturer) {
+    public NotebooksPageSteps selectManufacturer(String manufacturer) throws NoSuchFieldException, InterruptedException {
         new NotebooksPage().selectManufacturer(manufacturer);
         return this;
     }
